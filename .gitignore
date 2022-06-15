@@ -1,0 +1,9 @@
+/node_modules
+/packages
+.class
+/bin
+/out
+/target
+bitbucket-pipelines.yml
+.bat
+.env
