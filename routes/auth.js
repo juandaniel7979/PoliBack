@@ -44,7 +44,7 @@ const schemaLoginProfesor = Joi.object({
 
 const schemaLoginEstudiante = Joi.object({
     correo: Joi.string().min(6).max(255).required().email().messages(mensaje("correo")),
-    contrasena: Joi.string().min(6).max(1024).required().messages(mensaje("contrasena"))
+    contrasena: Joi.string().min(6).max(1024).required().messages('El usuario o contraseña son incorrectos')
 })
 
 
