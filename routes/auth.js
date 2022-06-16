@@ -39,7 +39,11 @@ function mensaje(campo){
 
 const schemaLoginProfesor = Joi.object({
     correo: Joi.string().min(6).max(255).required().email().messages(mensaje("correo")),
-    contrasena: Joi.string().min(6).max(1024).required().messages(mensaje("contrasena"))
+    contrasena: Joi.string().min(5).max(1024).required().messages({
+        'string.base': `"a" should be a type of 'text'`,
+        'string.empty': `"a" cannot be an empty field`,
+        'string.min': `"a" should be at least {#limit} characters long`,
+        })
 })
 
 const schemaLoginEstudiante = Joi.object({
@@ -61,7 +65,7 @@ router.post('/login-estudiante', async (req, res) => {
     if (!user) return res.status(400).json({ error: 1, message: 'Usuario no encontrado' });
 
     const validateContrasena = await bcrypt.compare(req.body.contrasena, user.contrasena)
-    if (!validateContrasena) return res.status(400).json({ error: true, mensaje: 'Contraseña incorrecta' })
+    if (!validateContrasena) return res.status(400).json({ error: true, mensaje: 'El usuario o la contrasena son incorrectas, valida nuevamente' })
 
     const token = jwt.sign({
         nombre: user.nombre,
@@ -83,7 +87,7 @@ router.post('/login-profesor', async (req, res) => {
     if (!user) return res.status(400).json({ error: 1, message: 'Usuario no encontrado' });
 
     const validateContrasena = await bcrypt.compare(req.body.contrasena, user.contrasena)
-    if (!validateContrasena) return res.status(400).json({ error: true, mensaje: 'Contraseña incorrecta' })
+    if (!validateContrasena) return res.status(400).json({ error: true, mensaje: 'El usuario o la contrasena son incorrectas, valida nuevamente' })
 
     const token = jwt.sign({
         nombre: user.nombre,
