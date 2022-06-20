@@ -39,7 +39,7 @@ function mensaje(campo){
 
 const schemaLoginProfesor = Joi.object({
     correo: Joi.string().min(6).max(255).required().email().messages(mensaje("correo")),
-    contrasena: Joi.string().min(5).max(1024).required().messages({
+    contrasena: Joi.string().max(1024).required().messages({
         'string.base': `"a" should be a type of 'text'`,
         'string.empty': `"a" cannot be an empty field`,
         'string.min': `"a" should be at least {#limit} characters long`,
@@ -48,7 +48,7 @@ const schemaLoginProfesor = Joi.object({
 
 const schemaLoginEstudiante = Joi.object({
     correo: Joi.string().min(6).max(255).required().email().messages(mensaje("correo")),
-    contrasena: Joi.string().min(5).max(1024).required().messages({
+    contrasena: Joi.string().max(1024).required().messages({
         'string.base': `"a" should be a type of 'text'`,
         'string.empty': `"a" cannot be an empty field`,
         'string.min': `"a" should be at least {#limit} characters long`,
