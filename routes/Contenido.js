@@ -35,6 +35,10 @@ router.post('/contenido', async (req, res) => {
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
     const token = req.header('auth-token');
     var decoded = jwt_decode(token);
+    const exiteContenido = await Contenido.findOne({ nombre: req.body.nombre});
+    if (exiteContenido){
+        return res.status(400).json({error: 1, message: true,message: "Hay una publicacion con el mismo titulo, por favor agrege uno nuevamente"});
+    }
     const subcategoria = await Subcategoria.findOne({ _id: req.body.id_subcategoria });
         const contenido = new Contenido({
             nombre: req.body.nombre,

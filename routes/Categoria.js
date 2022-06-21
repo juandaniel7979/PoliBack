@@ -35,6 +35,10 @@ router.post('/categoria', async (req, res) => {
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
     const token = req.header('auth-token');
     var decoded = jwt_decode(token);
+    const exiteCategoria = await Categoria.findOne({ nombre: req.body.nombre});
+    if (exiteCategoria){
+        return res.status(400).json({error: 1, message: true,message: "Esta categoria ya existe"});
+    }
     const userdata = await Profesor.findOne({ _id: decoded.id });
     if (userdata) {
         const categoria = new Categoria({
