@@ -57,6 +57,18 @@ router.post('/contenido', async (req, res) => {
         }
 })
 
+//trae todos los contenidos creadas dentro de una categoria
+router.get('/contenidos', async (req, res) => {
+    const { error } = checkid.validate(req.query);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+            const contenido = await Contenido.find({ id_subcategoria: req.query.id });
+            res.json({
+                error: 0,
+                contenido: contenido
+            })
+})
+
+
 router.get('/contenido', async (req, res) => {
     const { error } = checkid.validate(req.body);
     let contenido;

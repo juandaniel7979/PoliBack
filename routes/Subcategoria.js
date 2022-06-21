@@ -56,6 +56,19 @@ router.post('/subcategoria', async (req, res) => {
         }
 })
 
+//trae todos los categorias creadas por un profesor
+router.get('/subcategorias', async (req, res) => {
+    const { error } = checkid.validate(req.query);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+            const subcategoria = await Subcategoria.find({ id_categoria: req.query.id });
+            res.json({
+                error: 0,
+                subcategoria: subcategoria
+            })
+})
+
+
+
 // trae todos los subcategorias
 router.get('/subcategoria', async (req, res) => {
     const { error } = checkid.validate(req.body);
