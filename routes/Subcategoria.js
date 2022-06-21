@@ -33,7 +33,11 @@ router.post('/subcategoria', async (req, res) => {
     const { error } = schemaRegistrarSubcategoria.validate(req.body);
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
     const token = req.header('auth-token');
-    var decoded = jwt_decode(token);
+    // var decoded = jwt_decode(token);
+    const exiteSubcategoria = await Subcategoria.findOne({ nombre: req.body.nombre});
+    if (exiteSubcategoria){
+        return res.status(400).json({error: 1, message: true,message: "Esta subcategoria ya existe"});
+    }
     const categoria = await Categoria.findOne({ _id: req.body.id_categoria });
         const subcategoria = new Subcategoria({
             nombre: req.body.nombre,

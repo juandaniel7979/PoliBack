@@ -10,20 +10,20 @@ const jwt_decode = require("jwt-decode");
 const schemaRegisterProfesor = Joi.object({
     uid: Joi.string().min(6).max(255).required().messages(mensaje("uid")),
     nombre: Joi.string().min(2).max(255).required().messages(mensaje("nombre")),
-    nombre_2: Joi.string().min(6).max(255).optional(),
-    apellido: Joi.string().min(6).max(255).required().messages(mensaje("apellido")),
-    apellido_2: Joi.string().min(6).max(255).optional(),
-    correo: Joi.string().min(6).max(255).email().required().email().messages(mensaje("correo")),
-    contrasena: Joi.string().min(6).max(1024).required().messages(mensaje("contrasena"))
+    nombre_2: Joi.string().max(255).optional(),
+    apellido: Joi.string().min(2).max(255).required().messages(mensaje("apellido")),
+    apellido_2: Joi.string().max(255).optional(),
+    correo: Joi.string().min(8).max(255).email().required().email().messages(mensaje("correo")),
+    contrasena: Joi.string().min(4).max(1024).required().messages(mensaje("contrasena"))
     
 })
 
 const schemaRegisterEstudiante = Joi.object({
     uid: Joi.string().min(6).max(255).required().messages(mensaje("uid")),
     nombre: Joi.string().min(2).max(255).required().messages(mensaje("nombre")),
-    nombre_2: Joi.string().min(6).max(255).optional(),
+    nombre_2: Joi.string().max(255).optional(),
     apellido: Joi.string().min(6).max(255).required().messages(mensaje("apellido")),
-    apellido_2: Joi.string().min(6).max(255).optional(),
+    apellido_2: Joi.string().max(255).optional(),
     correo: Joi.string().min(6).max(255).email().required().email().messages(mensaje("correo")),
     contrasena: Joi.string().min(6).max(1024).required().messages(mensaje("contrasena"))
     
