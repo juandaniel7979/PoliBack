@@ -68,7 +68,7 @@ router.get('/categorias', async (req, res) => {
             const categoria = await Categoria.find({ id_profesor: req.query.id });
             res.json({
                 error: 0,
-                curso: categoria
+                categoria: categoria
             })
 })
 
