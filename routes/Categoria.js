@@ -37,7 +37,7 @@ router.post('/categoria', async (req, res) => {
     var decoded = jwt_decode(token);
     const exiteCategoria = await Categoria.findOne({ nombre: req.body.nombre});
     if (exiteCategoria){
-        return res.status(400).json({error: 1, message: true,message: "Esta categoria ya existe"});
+        return res.status(400).json({error: 1, message: true,message: "La categoria que intenta añadir ya existe"});
     }
     const userdata = await Profesor.findOne({ _id: decoded.id });
     if (userdata) {
@@ -62,22 +62,14 @@ router.post('/categoria', async (req, res) => {
 })
 
 //trae todos los categorias creadas por un profesor
-router.get('/curso', async (req, res) => {
-    const { error } = listarCategoria.validate(req.body);
+router.get('/categorias', async (req, res) => {
+    const { error } = checkid.validate(req.query);
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
-        if(req.body.limit){
-            const categoria = await Categoria.find({ id_creador: req.body.id }).limit(req.body.limit);
+            const categoria = await Categoria.find({ id_profesor: req.query.id });
             res.json({
                 error: 0,
                 curso: categoria
             })
-        }else{
-            const categoria = await Categoria.find({ id_creador: req.body.id });
-            res.json({
-                error: 0,
-                curso: categoria
-            })
-        }
 })
 
 
