@@ -1,3 +1,4 @@
+const { array } = require('@hapi/joi');
 const mongoose = require('mongoose');
 const estudianteSchema = mongoose.Schema({
     uid: {
@@ -41,6 +42,13 @@ const estudianteSchema = mongoose.Schema({
         required: true,
         min: 6,
         max: 40
+    },
+    favoritos: {
+        type: Array,
+        required: true,
+        min: 6,
+        max: 40,
+        default: []
     }
 })
 

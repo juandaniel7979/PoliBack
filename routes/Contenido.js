@@ -24,7 +24,8 @@ const checkid = Joi.object({
 const schemaRegistrarContenido = Joi.object({
     id_subcategoria: Joi.string().min(1).required().messages(mensaje("id_profesor")),
     nombre: Joi.string().min(2).max(255).required().messages(mensaje("nombre")),
-    descripcion: Joi.string().min(20).max(255).required().messages(mensaje("descripcion")),
+    descripcion: Joi.string().min(20).max(1024).required().messages(mensaje("descripcion")),
+    // descripcion_2: Joi.array().min(1).max(1024).required().messages(mensaje("descripcion_2")),
     // estado: Joi.string().min(0).max(1).required().messages(mensaje("contrasena"))
     
 })
@@ -37,19 +38,20 @@ router.post('/contenido', async (req, res) => {
     var decoded = jwt_decode(token);
     const exiteContenido = await Contenido.findOne({ nombre: req.body.nombre});
     if (exiteContenido){
-        return res.status(400).json({error: 1, message: true,message: "Hay una publicacion con el mismo titulo, por favor agrege uno nuevamente"});
+        return res.status(400).json({error: 1, message: true,message: "Hay una publicacion con el mismo titulo, por favor pruebe nuevamente con otro titulo"});
     }
     const subcategoria = await Subcategoria.findOne({ _id: req.body.id_subcategoria });
         const contenido = new Contenido({
             nombre: req.body.nombre,
             descripcion: req.body.descripcion,
+            // descripcion_2: req.body.descripcion_2,
             id_subcategoria: subcategoria._id
         });
         try {
             const contenidoSave = await contenido.save();
             res.json({
                 error: 0,
-                contenido: contenidoSave
+                message: 'El contenido se ha agregado con exito' 
             })
             
         } catch (error) {

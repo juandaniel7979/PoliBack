@@ -18,6 +18,13 @@ const subcategoriaSchema = mongoose.Schema({
         min: 6,
         max: 255
     },
+    url: {
+        type: String,
+        required:true,
+        min: 6,
+        max: 400,
+        default:""
+    },
     estado: {
         type: Number,
         required: true,

@@ -18,6 +18,12 @@ const contenidoSchema = mongoose.Schema({
         min: 6,
         max: 255
     },
+    descripcion_2: {
+        type: Array,
+        required: true,
+        min: 6,
+        max: 255
+    },
     estado: {
         type: Number,
         required: true,
