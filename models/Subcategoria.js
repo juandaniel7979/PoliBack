@@ -20,7 +20,7 @@ const subcategoriaSchema = mongoose.Schema({
     },
     url: {
         type: String,
-        required:true,
+        required:false,
         min: 6,
         max: 400,
         default:""
