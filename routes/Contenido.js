@@ -40,11 +40,10 @@ router.post('/contenido', async (req, res) => {
     if (exiteContenido){
         return res.status(400).json({error: 1, message: true,message: "Hay una publicacion con el mismo titulo, por favor pruebe nuevamente con otro titulo"});
     }
-    const subcategoria = await Subcategoria.findOne({ _id: req.body.id_subcategoria });
+    const subcategoria = await Subcategoria.findOne({ id: req.body.id_subcategoria });
         const contenido = new Contenido({
             nombre: req.body.nombre,
             descripcion: req.body.descripcion,
-            // descripcion_2: req.body.descripcion_2,
             id_subcategoria: subcategoria._id
         });
         try {
@@ -68,6 +67,39 @@ router.get('/contenidos', async (req, res) => {
                 error: 0,
                 contenido: contenido
             })
+})
+
+
+//trae todos los contenidos creadas dentro de una categoria
+router.put('/actualizar', async (req, res) => {
+    const { error } = checkid.validate(req.query);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+    console.log(req.query)
+    const id = req.query.id;
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+        const contenido = await Contenido.find({_id:id} );
+        if(contenido){
+            const updateContenido = new Contenido({
+                nombre: req.body.nombre,
+                descripcion: req.body.descripcion,
+            });
+            await Contenido.updateOne({ _id:id }, { $set: updateContenido});
+            const contenidoUpdated = await Contenido.findOne({ _id:id });
+            res.json({
+                error: 0,
+                contenido_actualizado: contenidoUpdated
+            })
+        }else{
+            return res.json({
+                error: 0,
+                mensaje: 'No se ha encontrado la categoria que busca'
+            })
+        }
+      }
+      res.json({
+        error: 0,
+        mensaje: 'No se ha encontrado la categoria que busca'
+    })
 })
 
 
