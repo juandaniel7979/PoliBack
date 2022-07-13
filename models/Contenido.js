@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 const contenidoSchema = mongoose.Schema({
+    id_profesor: {
+        type: String,
+        required: true,
+        min: 6,
+        max: 11
+    },
     id_subcategoria: {
         type: String,
         required: true,
