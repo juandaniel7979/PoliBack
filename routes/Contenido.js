@@ -41,7 +41,7 @@ router.post('/contenido', async (req, res) => {
     if (exiteContenido){
         return res.status(400).json({error: 1, message: true,message: "Hay una publicacion con el mismo titulo, por favor pruebe nuevamente con otro titulo"});
     }
-    const subcategoria = await Subcategoria.findOne({ id: req.body.id_subcategoria });
+    const subcategoria = await Subcategoria.findOne({ _id: req.body.id_subcategoria });
         const contenido = new Contenido({
             id_profesor:decoded.id,
             nombre: req.body.nombre,
@@ -72,11 +72,11 @@ router.get('/contenidos', async (req, res) => {
 })
 
 
-//trae todos los contenidos creadas dentro de una categoria
+//trae todos los contenidos creadas dentro de una subcategoria
 router.get('/contenido', async (req, res) => {
     const { error } = checkid.validate(req.query);
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
-            const contenido = await Contenido.find({ _id: req.query.id });
+            const contenido = await Contenido.find({ id: req.query.id });
             res.json({
                 error: 0,
                 contenido: contenido

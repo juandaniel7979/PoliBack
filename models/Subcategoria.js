@@ -21,7 +21,7 @@ const subcategoriaSchema = mongoose.Schema({
     descripcion: {
         type: String,
         required: true,
-        min: 6,
+        min: 20,
         max: 255
     },
     url: {

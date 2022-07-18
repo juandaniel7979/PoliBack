@@ -65,7 +65,7 @@ router.post('/categoria', async (req, res) => {
 router.get('/categorias', async (req, res) => {
     const { error } = checkid.validate(req.query);
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
-            const categoria = await Categoria.find({ id_profesor: req.query.id });
+            const categoria = await Categoria.find({ id_profesor: req.query.id,estado:0});
             res.json({
                 error: 0,
                 categoria: categoria
@@ -97,6 +97,34 @@ router.get('/categoria', async (req, res) => {
         categoria: categoria
     })
 })
+
+
+const checkBorrar = Joi.object({
+    id: Joi.string().min(10).required().messages(mensaje("id_subcategoria")),
+})
+
+//Ruta para realizar el borrado logico de una subcategoria
+router.put('/borrar', async (req, res) => {
+    const { error } = checkBorrar.validate(req.body);
+    console.log(req.body);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+    const token = req.header('auth-token');
+    var decoded = jwt_decode(token);
+    const filter = {_id: req.body.id,id_profesor:decoded.id}
+    const update = { estado: 1 };
+    
+    try {
+        let rsp = await Categoria.findOneAndUpdate(filter, update);
+        rsp = await Categoria.findOne(filter);
+        res.json({
+            error: 0,
+            data: rsp
+        })
+    } catch (error) {
+        res.status(400).json({ error: 1, message: "no se pudo actualizar" });
+    }
+});
+
 
 
 module.exports = router;

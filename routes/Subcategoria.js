@@ -116,40 +116,6 @@ const checkUrl = Joi.object({
     url: Joi.string().min(50).required().messages(mensaje("url")),
 })
 
-// router.put('/url', async (req, res) => {
-//     const { error } = checkUrl.validate(req.body);
-//     console.log(req.body);
-//     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
-//     const token = req.header('auth-token');
-//     var decoded = jwt_decode(token);
-//     let contentData;
-//     try{
-//             subcategoriaData = await Subcategoria.findOne({id: req.body.id});
-//         //  res.json({
-//         //     error: 0,
-//         //     contenido: contentData
-//         // })
-//     }catch(error){
-//         res.status(400).json({ error: 1, message: "el id de la subcategoria no existe o es incorrecto" });
-//     }
-    
-
-//     if (req.body.url) {
-//         subcategoriaData.url = req.body.url;
-//     }
-//     let rsp;
-//     try {
-//         rsp = await subcategoriaData.save();
-//         res.json({
-//             error: 0,
-//             data: rsp
-//         })
-//     } catch (error) {
-//         res.status(400).json({ error: 1, message: "no se pudo guardar" });
-//     }
-
-// });
-
 router.put('/url', async (req, res) => {
     const { error } = checkUrl.validate(req.body);
     console.log(req.body);
@@ -172,24 +138,63 @@ router.put('/url', async (req, res) => {
             res.status(400).json({ error: 1, message: "no se pudo actualizar la url" });
         }
     }
-    // try {
-    //     let rsp = await Subcategoria.findOneAndUpdate(filter, update);
-    //     rsp = await Subcategoria.findOne(filter);
-    //     res.json({
-    //         error: 0,
-    //         data: rsp
-    //     })
-    // } catch (error) {
-    //     res.status(400).json({ error: 1, message: "no se pudo actualizar la url" });
-    // }
+});
 
+const checkEditar = Joi.object({
+    id_subcategoria: Joi.string().min(10).required().messages(mensaje("id_subcategoria")),
+    nombre: Joi.string().allow('', null).messages(mensaje("nombre")),
+    descripcion:Joi.string().allow('', null).messages(mensaje("descripcion")),
+})
+
+router.put('/editar', async (req, res) => {
+    const { error } = checkEditar.validate(req.body);
+    console.log(req.body);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+    const token = req.header('auth-token');
+    var decoded = jwt_decode(token);
+    const filter = {_id: req.body.id_subcategoria,id_profesor:decoded.id}
+    console.log(decoded);
+    console.log('Descripcion:'+req.body.descripcion.length);
+    // const update = { estado: 1 };
+        let update;
+    if(req.body.nombre!=='' && req.body.descripcion!=='' && req.body.nombre.length>6 && req.body.descripcion.length>20){
+        update = {nombre: req.body.nombre,descripcion:req.body.descripcion };
+        console.log('entro al 1');
+    }else if(req.body.nombre!=='' && req.body.descripcion==='' && req.body.nombre.length>6){
+        console.log('entro al 2');
+        update = {nombre: req.body.nombre};
+    }else if(req.body.nombre==='' && req.body.descripcion!==''  && req.body.descripcion.length>20){
+        console.log('entro al 3');
+        update = {descripcion:req.body.descripcion };
+    }else{
+        res.json({
+            error: 1,
+            mensaje: 'La descripcion debe tener mas de 20 caracteres y el nombre mas de 6'
+        })
+    }
+    
+    try {
+        let alguna = await Subcategoria.findOne(filter);
+        console.log(alguna);
+        let rsp = await Subcategoria.findOneAndUpdate(filter, update);
+        rsp = await Subcategoria.findOne(filter);
+        res.json({
+            error: 0,
+            data: rsp
+        })
+    } catch (error) {
+        res.status(400).json({ error: 1, message: "no se pudo actualizar" });
+    }
 });
 
 
+
+// Validaciones para el borrado
 const checkBorrar = Joi.object({
     id: Joi.string().min(10).required().messages(mensaje("id_subcategoria")),
 })
 
+//Ruta para realizar el borrado logico de una subcategoria
 router.put('/borrar', async (req, res) => {
     const { error } = checkBorrar.validate(req.body);
     console.log(req.body);
@@ -210,6 +215,8 @@ router.put('/borrar', async (req, res) => {
         res.status(400).json({ error: 1, message: "no se pudo actualizar" });
     }
 });
+
+
 
 
 module.exports = router;
