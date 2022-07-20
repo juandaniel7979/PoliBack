@@ -82,11 +82,23 @@ const checkid = Joi.object({
 router.get('/categoria', async (req, res) => {
     const { error } = checkid.validate(req.body);
     let categoria;
+    let profesor;
+    let profesores = [];
     if (error) {
-        categoria = await Categoria.find();
+        categoria = await Categoria.find({estado:0});
+        for (let index = 0; index < categoria.length; index++) {
+            const element = categoria[index];
+            profesor = await Profesor.findOne({_id:categoria[index].id_profesor})
+            let temp = {profesor:profesor,element};
+            profesores.push(temp);
+        }
+        // profesor = await Profesor.find({_id:categoria.id_profesor})
+        // console.log('Profesores')
+        // console.log(profesores);
     } else {
         try {
-            categoria = await Categoria.find({ _id: req.body.id });
+            categoria = await Categoria.find({ _id: req.body.id,estado:0 });
+            profesor = await Profesor.find({_id:categoria.id_profesor})
         } catch (error) {
             res.status(400).json({ error: 1, message: "el id de la categoria no existe o es incorrecto" });
 
@@ -94,7 +106,8 @@ router.get('/categoria', async (req, res) => {
     }
     res.json({
         error: 0,
-        categoria: categoria
+        categoria: profesores
+        // profesor: profesor
     })
 })
 
