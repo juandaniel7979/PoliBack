@@ -25,10 +25,7 @@ const checkid = Joi.object({
 const schemaRegistrarContenido = Joi.object({
     id_subcategoria: Joi.string().min(1).required().messages(mensaje("id_profesor")),
     nombre: Joi.string().min(2).max(255).required().messages(mensaje("nombre")),
-    descripcion: Joi.string().min(20).max(1024).required().messages(mensaje("descripcion")),
-    // descripcion_2: Joi.array().min(1).max(1024).required().messages(mensaje("descripcion_2")),
-    // estado: Joi.string().min(0).max(1).required().messages(mensaje("contrasena"))
-    
+    descripcion_corta: Joi.string().min(20).max(255).required().messages(mensaje("descripcion_corta")),
 })
 
 // crea una nueva categoria
@@ -45,14 +42,15 @@ router.post('/contenido', async (req, res) => {
         const contenido = new Contenido({
             id_profesor:decoded.id,
             nombre: req.body.nombre,
-            descripcion: req.body.descripcion,
+            descripcion_corta: req.body.descripcion_corta,
             id_subcategoria: subcategoria._id
         });
         try {
             const contenidoSave = await contenido.save();
             res.json({
                 error: 0,
-                message: 'El contenido se ha agregado con exito' 
+                message: 'El contenido se ha agregado con exito',
+                data: contenidoSave
             })
             
         } catch (error) {
@@ -83,144 +81,6 @@ router.get('/contenido', async (req, res) => {
             })
 })
 
-
-//trae todos los contenidos creadas dentro de una categoria
-router.put('/actualizar', async (req, res) => {
-    const { error } = checkid.validate(req.query);
-    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
-    const token = req.header('auth-token');
-    var decoded = jwt_decode(token);
-    console.log(req.query.id)
-    const contenido=null;
-    const id = req.query.id;
-        try {
-            contenido = await Contenido.findById(decoded._id);
-            console.log(contenido)
-        } catch (error) {
-            res.status(400).json({ error: 1, message: "el id de la subcategoria no existe o es incorrecto" });
-        }
-        if(contenido){
-            const updateContenido = new Contenido({
-                nombre: req.body.nombre,
-                descripcion: req.body.descripcion,
-            });
-            await Contenido.updateOne({ _id:req }, { $set: updateContenido}).catch;
-            const contenidoUpdated = await Contenido.find({ id:id });
-            res.json({
-                error: 0,
-                contenido_actualizado: contenidoUpdated
-            })
-
-        }else{
-            return res.json({
-                error: 0,
-                mensaje: 'No se ha encontrado la categoria que busca'
-            })
-        }
-      res.json({
-        error: 0,
-        mensaje: 'No se ha encontrado la categoria que busca'
-    })
-})
-
-//trae todos los contenidos creadas dentro de una categoria
-router.put('/actualizar2', async (req, res) => {
-    const { error } = checkidAct.validate(req.body);
-    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
-    // const token = req.header('auth-token');
-    // var decoded = jwt_decode(token);
-    // console.log(req.query.id)
-    let contenido;
-    // const id = req.query.id;
-        try {
-            contenido = await  Contenido.findOne({id: req.body.id});
-            console.log(contenido)
-        } catch (error) {
-            res.status(400).json({ error: 1, message: "el id de la subcategoria no existe o es incorrecto" });
-        }
-        if(contenido){
-            const updateContenido = new Contenido({
-                nombre: req.body.nombre,
-                descripcion: req.body.descripcion,
-            });
-            try {
-                const rsp = await Contenido.updateOne({ _id:req }, { $set: updateContenido});
-                console.log('LLego aqui');
-                const contenidoUpdated = await Contenido.find({ id:req.body.id });
-                res.json({
-                    error: 0,
-                    contenido_actualizado: contenidoUpdated,
-                    rsp
-                })  
-            } catch (error) {
-                res.status(400).json({ error: 1, message: "No se pudo actualizar el contenido" });
-            }
-
-        }else{
-            return res.json({
-                error: 0,
-                mensaje: 'No se ha encontrado la categoria que busca'
-            })
-        }
-    //   res.json({
-    //     error: 0,
-    //     mensaje: 'No se ha encontrado la categoria que busca'
-    // })
-})
-
-
-
-
-
-const checkidAct = Joi.object({
-    id: Joi.string().min(1).required().messages(mensaje("id")),
-    nombre: Joi.string().min(6).max(50).messages(mensaje("nombre")),
-    descripcion: Joi.string().min(6).max(255).messages(mensaje("descripcion"))
-})
-
-// actualizar usuarios
-router.put('/actualizacion', async (req, res) => {
-    const { error } = checkidAct.validate(req.body);
-    console.log(req.body);
-    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
-    const token = req.header('auth-token');
-    var decoded = jwt_decode(token);
-    let contentData;
-    try{
-            contentData = await Contenido.findOne({id: req.body.id});
-        //  res.json({
-        //     error: 0,
-        //     contenido: contentData
-        // })
-    }catch(error){
-        res.status(400).json({ error: 1, message: "el id del contenido no existe o es incorrecto" });
-    }
-    
-    if (req.body.nombre) {
-        contentData.nombre = req.body.nombre;
-    }
-    if (req.body.descripcion) {
-        contentData.descripcion = req.body.descripcion;
-    }
-    let rsp;
-    try {
-        rsp = await contentData.save();
-        res.json({
-            error: 0,
-            data: rsp
-        })
-    } catch (error) {
-        res.status(400).json({ error: 1, message: "no se pudo guardar" });
-    }
-
-    // res.json({
-    //     error: 0,
-    //     data: rsp
-    // })
-})
-
-
-
 router.get('/contenido', async (req, res) => {
     const { error } = checkid.validate(req.body);
     let contenido;
@@ -231,7 +91,7 @@ router.get('/contenido', async (req, res) => {
             contenido = await Contenido.find({ _id: req.body.id });
         } catch (error) {
             res.status(400).json({ error: 1, message: "el id de la contenido no existe o es incorrecto" });
-
+            
         }
     }
     res.json({
@@ -239,6 +99,80 @@ router.get('/contenido', async (req, res) => {
         contenido: contenido
     })
 })
+
+
+
+const checkEditar = Joi.object({
+    id_contenido: Joi.string().min(10).required().messages(mensaje("id_categoria")),
+    nombre: Joi.string().allow('', null).messages(mensaje("nombre")),
+    descripcion_corta:Joi.string().allow('', null).messages(mensaje("descripcion")),
+    descripcion:Joi.string().allow('', null).messages(mensaje("descripcion")),
+})
+
+
+// Editar publicaciones
+router.put('/editar', async (req, res) => {
+    const { error } = checkEditar.validate(req.body);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+    const token = req.header('auth-token');
+    var decoded = jwt_decode(token);
+    const filter = {_id: req.body.id_contenido,id_profesor:decoded.id}
+    let update;
+    if(req.body.nombre!=='' && req.body.descripcion!=='' && req.body.nombre.length>6 && req.body.descripcion.length>20){
+        update = {nombre: req.body.nombre,descripcion_corta:req.body.descripcion_corta };
+        console.log('entro al 1');
+    }else if(req.body.nombre!=='' && req.body.descripcion_corta==='' && req.body.nombre.length>6){
+        console.log('entro al 2');
+        update = {nombre: req.body.nombre};
+    }else if(req.body.nombre==='' && req.body.descripcion_corta!==''  && req.body.descripcion_corta.length>20){
+        console.log('entro al 3');
+        update = {descripcion_corta:req.body.descripcion_corta };
+    }else{
+        res.json({
+            error: 1,
+            mensaje: 'La descripcion corta debe tener mas de 20 caracteres y el nombre mas de 6'
+        })
+    }
+    
+    try {
+        let rsp = await Contenido.findOneAndUpdate(filter, update);
+        rsp = await Contenido.findOne(filter);
+        res.json({
+            error: 0,
+            data: rsp
+        })
+    } catch (error) {
+        res.status(400).json({ error: 1, message: "no se pudo actualizar" });
+    }
+});
+
+
+const checkEditarPublicacion = Joi.object({
+    id_contenido: Joi.string().min(10).required().messages(mensaje("id_contenido")),
+    descripcion:Joi.string().allow('', null).messages(mensaje("descripcion")),
+})
+
+
+// Editar publicaciones
+router.put('/editarPub', async (req, res) => {
+    const { error } = checkEditarPublicacion.validate(req.body);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+    const token = req.header('auth-token');
+    var decoded = jwt_decode(token);
+    const filter = {_id: req.body.id_contenido,id_profesor:decoded.id}
+    const update = {descripcion:req.body.descripcion };
+
+    try {
+        let rsp = await Contenido.findOneAndUpdate(filter, update);
+        rsp = await Contenido.findOne(filter);
+        res.json({
+            error: 0,
+            data: rsp
+        })
+    } catch (error) {
+        res.status(400).json({ error: 1, message: "no se pudo actualizar" });
+    }
+});
 
 
 module.exports = router;

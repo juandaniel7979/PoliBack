@@ -18,11 +18,18 @@ const contenidoSchema = mongoose.Schema({
         min: 6,
         max: 50
     },
+    descripcion_corta: {
+        type: String,
+        required: true,
+        min: 15,
+        max: 255
+    },
     descripcion: {
         type: String,
         required: true,
-        min: 6,
-        max: 255
+        min: 1,
+        max: 255,
+        default:" "
     },
     estado: {
         type: Number,

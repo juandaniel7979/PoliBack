@@ -99,8 +99,56 @@ router.get('/categoria', async (req, res) => {
 })
 
 
+const checkEditar = Joi.object({
+    id_categoria: Joi.string().min(10).required().messages(mensaje("id_categoria")),
+    nombre: Joi.string().allow('', null).messages(mensaje("nombre")),
+    descripcion:Joi.string().allow('', null).messages(mensaje("descripcion")),
+})
+
+// Editar categorias
+router.put('/editar', async (req, res) => {
+    const { error } = checkEditar.validate(req.body);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+    const token = req.header('auth-token');
+    var decoded = jwt_decode(token);
+    const filter = {_id: req.body.id_categoria,id_profesor:decoded.id}
+
+    let update;
+    if(req.body.nombre!=='' && req.body.descripcion!=='' && req.body.nombre.length>6 && req.body.descripcion.length>20){
+        update = {nombre: req.body.nombre,descripcion:req.body.descripcion };
+        console.log('entro al 1');
+    }else if(req.body.nombre!=='' && req.body.descripcion==='' && req.body.nombre.length>6){
+        console.log('entro al 2');
+        update = {nombre: req.body.nombre};
+    }else if(req.body.nombre==='' && req.body.descripcion!==''  && req.body.descripcion.length>20){
+        console.log('entro al 3');
+        update = {descripcion:req.body.descripcion };
+    }else{
+        res.json({
+            error: 1,
+            mensaje: 'La descripcion debe tener mas de 20 caracteres y el nombre mas de 6'
+        })
+    }
+    
+    try {
+        let alguna = await Subcategoria.findOne(filter);
+        console.log(alguna);
+        let rsp = await Subcategoria.findOneAndUpdate(filter, update);
+        rsp = await Subcategoria.findOne(filter);
+        res.json({
+            error: 0,
+            data: rsp
+        })
+    } catch (error) {
+        res.status(400).json({ error: 1, message: "no se pudo actualizar" });
+    }
+});
+
+
+
+
 const checkBorrar = Joi.object({
-    id: Joi.string().min(10).required().messages(mensaje("id_subcategoria")),
+    id: Joi.string().min(10).required().messages(mensaje("id_categoria")),
 })
 
 //Ruta para realizar el borrado logico de una subcategoria
