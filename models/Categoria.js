@@ -18,13 +18,21 @@ const categoriaSchema = mongoose.Schema({
         min: 6,
         max: 255
     },
+    url: {
+        type: String,
+        required:false,
+        min: 6,
+        max: 400,
+        default:""
+    },
     estado: {
         type: Number,
         required: true,
         min: 0,
         max: 1,
         default: 0
-    }
+    },
+    
 })
 
 module.exports = mongoose.model('Categoria', categoriaSchema)

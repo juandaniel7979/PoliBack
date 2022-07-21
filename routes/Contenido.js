@@ -62,7 +62,7 @@ router.post('/contenido', async (req, res) => {
 router.get('/contenidos', async (req, res) => {
     const { error } = checkid.validate(req.query);
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
-            const contenido = await Contenido.find({ id_subcategoria: req.query.id });
+            const contenido = await Contenido.findOne({ id_subcategoria: req.query.id ,estado:0});
             res.json({
                 error: 0,
                 contenido: contenido
@@ -74,7 +74,7 @@ router.get('/contenidos', async (req, res) => {
 router.get('/contenido', async (req, res) => {
     const { error } = checkid.validate(req.query);
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
-            const contenido = await Contenido.find({ id: req.query.id });
+            const contenido = await Contenido.findOne({ _id: req.query.id });
             res.json({
                 error: 0,
                 contenido: contenido
@@ -159,12 +159,15 @@ router.put('/editarPub', async (req, res) => {
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
     const token = req.header('auth-token');
     var decoded = jwt_decode(token);
+    console.log(token);
+    console.log(decoded.id);
     const filter = {_id: req.body.id_contenido,id_profesor:decoded.id}
     const update = {descripcion:req.body.descripcion };
 
     try {
         let rsp = await Contenido.findOneAndUpdate(filter, update);
         rsp = await Contenido.findOne(filter);
+        console.log(rsp);
         res.json({
             error: 0,
             data: rsp

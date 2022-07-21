@@ -62,7 +62,7 @@ router.post('/login-estudiante', async (req, res) => {
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message })
 
     const user = await Estudiante.findOne({ correo: req.body.correo });
-    if (!user) return res.status(400).json({ error: 1, message: 'Usuario no encontrado' });
+    if (!user) return res.status(400).json({ error: 1, message: 'El usuario o la contrasena son incorrectas, valida nuevamente' });
 
     const validateContrasena = await bcrypt.compare(req.body.contrasena, user.contrasena)
     if (!validateContrasena) return res.status(400).json({ error: true, mensaje: 'El usuario o la contrasena son incorrectas, valida nuevamente' })
@@ -84,7 +84,7 @@ router.post('/login-profesor', async (req, res) => {
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message })
 
     const user = await Profesor.findOne({ correo: req.body.correo });
-    if (!user) return res.status(400).json({ error: 1, message: 'Usuario no encontrado' });
+    if (!user) return res.status(400).json({ error: 1, message: 'El usuario o la contrasena son incorrectas, valida nuevamente' });
 
     const validateContrasena = await bcrypt.compare(req.body.contrasena, user.contrasena)
     if (!validateContrasena) return res.status(400).json({ error: true, mensaje: 'El usuario o la contrasena son incorrectas, valida nuevamente' })
@@ -177,5 +177,47 @@ router.post('/register-estudiante', async (req, res) => {
         res.status(400).json({ error })
     }
 })
+
+router.get('/profesor', async (req, res) => {
+    const token = req.header('auth-token');
+    const decoded = jwt.decode(token);
+    const user = await Profesor.findOne({ _id: decoded.id });
+    if (!user){
+        return res.status(400).json({ error: 1, message: 'El usuario o la contrasena son incorrectas, valida nuevamente' });
+
+    }else{
+        res.json({
+            error: 0,
+            id:user.id,
+            nombre: user.nombre+' '+user.nombre_2+' '+user.apellido+' '+user.apellido_2,
+            email: user.correo,
+            rol:"profesor"
+        })
+    }
+})
+
+router.get('/estudiante', async (req, res) => {
+    const token = req.header('auth-token');
+    let user;
+    try{
+        const decoded = jwt.decode(token);
+        user = await Estudiante.findOne({ _id: decoded.id });
+    }catch(e){
+        return res.status(400).json({ error: 1, message: 'El usuario o la contrasena son incorrectas, valida nuevamente' });
+    }
+    if (!user){
+        return res.status(400).json({ error: 1, message: 'El usuario o la contrasena son incorrectas, valida nuevamente' });
+
+    }else{
+        res.json({
+            error: 0,
+            id:user.id,
+            nombre: user.nombre+' '+user.nombre_2+' '+user.apellido+' '+user.apellido_2,
+            email: user.correo,
+            rol:"estudiante"
+        })
+    }
+})
+
 
 module.exports = router;

@@ -201,7 +201,7 @@ router.put('/borrar', async (req, res) => {
     if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
     const token = req.header('auth-token');
     var decoded = jwt_decode(token);
-    const filter = {_id: req.body.id}
+    const filter = {_id: req.body.id,id_profesor:decoded.id}
     const update = { estado: 1 };
     
     try {

@@ -44,7 +44,8 @@ router.post('/categoria', async (req, res) => {
         const categoria = new Categoria({
             nombre: req.body.nombre,
             descripcion: req.body.descripcion,
-            id_profesor: userdata._id
+            id_profesor: userdata._id,
+            url:""
         });
         try {
             const categoriaSave = await categoria.save();
@@ -89,7 +90,7 @@ router.get('/categoria', async (req, res) => {
         for (let index = 0; index < categoria.length; index++) {
             const element = categoria[index];
             profesor = await Profesor.findOne({_id:categoria[index].id_profesor})
-            let temp = {profesor:profesor,element};
+            let temp = {profesor:profesor,categoria:element};
             profesores.push(temp);
         }
         // profesor = await Profesor.find({_id:categoria.id_profesor})
@@ -110,6 +111,7 @@ router.get('/categoria', async (req, res) => {
         // profesor: profesor
     })
 })
+
 
 
 const checkEditar = Joi.object({
@@ -144,10 +146,8 @@ router.put('/editar', async (req, res) => {
     }
     
     try {
-        let alguna = await Subcategoria.findOne(filter);
-        console.log(alguna);
-        let rsp = await Subcategoria.findOneAndUpdate(filter, update);
-        rsp = await Subcategoria.findOne(filter);
+        let rsp = await Categoria.findOneAndUpdate(filter, update);
+        rsp = await Categoria.findOne(filter);
         res.json({
             error: 0,
             data: rsp
@@ -156,7 +156,6 @@ router.put('/editar', async (req, res) => {
         res.status(400).json({ error: 1, message: "no se pudo actualizar" });
     }
 });
-
 
 
 
@@ -186,6 +185,55 @@ router.put('/borrar', async (req, res) => {
     }
 });
 
+
+// URl routes
+
+
+const checkUrl = Joi.object({
+    id_categoria: Joi.string().min(10).required().messages(mensaje("id_categoria")),
+    url:Joi.string().min(20).required().messages(mensaje("id_categoria"))
+})
+
+// Editar categorias
+router.put('/url', async (req, res) => {
+    const { error } = checkUrl.validate(req.body);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+    const token = req.header('auth-token');
+    var decoded = jwt_decode(token);
+    const filter = {_id: req.body.id_categoria,id_profesor:decoded.id}
+
+    const update = {url:req.body.url};
+   
+    try {
+        let rsp = await Categoria.findOneAndUpdate(filter, update);
+        rsp = await Categoria.findOne(filter);
+        res.json({
+            error: 0,
+            data: rsp
+        })
+    } catch (error) {
+        res.status(400).json({ error: 1, message: "no se pudo actualizar" });
+    }
+});
+
+
+// trae la url de la categoria
+router.get('/url', async (req, res) => {
+    const { error } = checkid.validate(req.query);
+    if (error) return res.status(400).json({ error: 1, message: error.details[0].message });
+        try {
+            const categoria = await Categoria.findOne({ _id: req.query.id,estado:0 });
+            console.log('categoria:'+categoria.url);
+            res.json({
+                error: 0,
+                url:categoria.url
+
+                // profesor: profesor
+            })
+        } catch (error) {
+            res.status(400).json({ error: 1, message: "el id de la categoria no existe o es incorrecto" });
+        }
+})
 
 
 module.exports = router;

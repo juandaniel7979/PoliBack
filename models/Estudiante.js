@@ -43,6 +43,13 @@ const estudianteSchema = mongoose.Schema({
         min: 6,
         max: 40
     },
+    // favoritos: {
+    //     type: Array,
+    //     required: true,
+    //     min: 6,
+    //     max: 40,
+    //     default: []
+    // }
 })
 
 module.exports = mongoose.model('Estudiante', estudianteSchema)
