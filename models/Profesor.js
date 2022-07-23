@@ -41,6 +41,20 @@ const profesorSchema = mongoose.Schema({
         required: true,
         min: 6,
         max: 40
+    },
+    estado: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 1,
+        default: 0
+    },
+    administrador: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 1,
+        default: 0
     }
 })
 
