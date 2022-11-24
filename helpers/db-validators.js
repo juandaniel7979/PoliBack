@@ -1,4 +1,4 @@
-const { Categoria,Producto } = require('../models');
+const { Categoria,Producto, Subcategoria } = require('../models');
 const Role = require('../models/role')
 const Tag = require('../models/tag')
 const Usuario = require('../models/usuario')
@@ -18,13 +18,12 @@ const esTagValido = async(tag='') => {
 
 }
 
+// Usuario
 const emailExiste = async(correo='algo') => {
-    
     const existeEmail = await Usuario.findOne({ correo });
     if( existeEmail )throw new Error(`El correo ${correo } ya está registrado en la base de datos`)
 
 }
-
 
 const exiseUsuarioPorId = async(id) => {
     const existeUsuario = await Usuario.findById(id);
@@ -32,6 +31,7 @@ const exiseUsuarioPorId = async(id) => {
 
 }
 
+// Categoria
 const existeCategoriaPorId = async(id) => {
     const existeCategoria = await Categoria.findById(id);
     if( !existeCategoria )throw new Error(`El id no existe: ${id}`)
@@ -42,8 +42,13 @@ const usuarioSuscritoEnCategoria = async(id) => {
     const categoria = await Categoria.findById(id);
     userId = categoria.suscriptores.find(element => element._id);
     if(userId)throw new Error(`El usuario ya se encuentra suscrito a la categoria`)
-
 }
+
+
+// Subcategoria
+
+
+// Producto
 const existeProductoPorId = async(id) => {
     const existeProducto = await Producto.findById(id);
     if( !existeProducto )throw new Error(`El id no existe: ${id}`)

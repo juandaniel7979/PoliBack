@@ -18,12 +18,18 @@ const { usuariosGet,
 const router = Router();
 
 router.get('/',usuariosGet)
+
+router.get('/:id',[
+
+], usuariosGet)
+
 router.put('/:id',[
     check('id', 'No es un id de mongo').isMongoId(),
     check('id').custom(exiseUsuarioPorId),
     check('rol').custom(esRoleValido),
     validarCampos
 ],usuariosPut) 
+
 router.post('/',[
     check('nit', 'El nombre es obligatorio').not().isEmail(),
     check('nombre', 'El nombre es obligatorio').not().isEmail(),
@@ -36,6 +42,7 @@ router.post('/',[
     validarCampos
 
 ],usuariosPost);
+
 router.delete('/:id',[
     validarJWT,
     // esAdminRole,

@@ -8,8 +8,8 @@ const { Categoria } = require('../models')
 
 // Obtener categoria  - paginado - total - populate
 const obtenerCategorias = async( req = request ,res=response ) => {
-        const estado = { estado: true };
-        const { limite = 5, desde = 0} = req.query  
+        const estado = { estado: 'PUBLICO' };
+        const { limite = 10, desde = 0} = req.query  
         
         const [total,categorias] = await Promise.all([
             Categoria.countDocuments(estado),
@@ -28,11 +28,22 @@ const obtenerCategorias = async( req = request ,res=response ) => {
 // Obtener categoria por id
 const obtenerCategoriasPorId = async( req = request,res = response ) => {
             const {id} = req.params;
-            const categoria = await Categoria.findById(id).populate('usuario','nombre ')
+            console.log(id);
+            const categoria = await Categoria.findById(id);
+            console.log(categoria)
+            return res.json(categoria)  
+    
+}
 
 
-
-        res.json(categoria)  
+// Obtener categoria por id
+const obtenerCategoriasPorTag = async( req = request,res = response ) => {
+            let {tag} = req.params;
+            tag = tag.toUpperCase();
+            console.log(tag);
+            const categoria = await Categoria.find({tags: tag});
+            // console.log(categoria)
+            return res.json({categorias: categoria})  
     
 }
 
@@ -149,5 +160,6 @@ module.exports = {
     actualizarCategoria,
     borrarCategoria,
     suscribirCategoria,
-    aprobarUsuario
+    aprobarUsuario,
+    obtenerCategoriasPorTag
 }
