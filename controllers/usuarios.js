@@ -26,10 +26,27 @@ const usuariosGet = async (req = request,res = response)=>{
 }
 
 
+const usuariosGetPorRol = async (req = request,res = response)=>{
+    let { limite = 5, desde = 0, estado = "PENDIENTE"} = req.query;
+    let { rol } = req.params;
+    estado = estado.toUpperCase();
+    rol = rol.toUpperCase();
+    
+        const usuarios = await Usuario.find({rol, estado})
+
+            .skip(Number(desde))
+            .limit(Number(limite))
+    
+    res.json({
+        usuarios
+    })  
+}
+
+
 const usuariosPost = async (req,res = response)=>{
         console.log(req.body)
         const { nit, nombre,nombre_2, apellido, apellido_2, correo, contrasena, rol } = req.body;
-        const usuario = new Usuario({nit,nombre, nombre_2, apellido,apellido_2, correo, contrasena, rol});
+        const usuario = new Usuario({nit,nombre, nombre_2, apellido,apellido_2, correo, contrasena, rol, imagen:''});
 
         // Encriptar la contraseña
         const salt = bcryptjs.genSaltSync(10);
@@ -80,5 +97,6 @@ module.exports = {
     usuariosPost,
     usuariosPatch,
     usuariosPut,
-    usuariosDelete
+    usuariosDelete,
+    usuariosGetPorRol
 }

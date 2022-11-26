@@ -13,7 +13,8 @@ const { usuariosGet,
         usuariosPost,
         usuariosDelete,
         usuariosPut,
-        usuariosPatch } = require('../controllers/usuarios');
+        usuariosPatch, 
+        usuariosGetPorRol} = require('../controllers/usuarios');
 
 const router = Router();
 
@@ -23,10 +24,23 @@ router.get('/:id',[
 
 ], usuariosGet)
 
+
+router.get('/admin/:rol',[
+    // TODO: verificar admin
+    check('id', 'No es un id de mongo').isMongoId(),
+    check('estado', 'El estado es obligatorio').not().isEmail(),
+    check('rol').custom(esRoleValido),
+], usuariosGetPorRol)
+router.get('/admin/:id',[
+    // TODO: verificar admin
+    check('id', 'No es un id de mongo').isMongoId(),
+    check('id').custom(exiseUsuarioPorId),
+], usuariosGetPorRol)
+
 router.put('/:id',[
     check('id', 'No es un id de mongo').isMongoId(),
     check('id').custom(exiseUsuarioPorId),
-    check('rol').custom(esRoleValido),
+    
     validarCampos
 ],usuariosPut) 
 

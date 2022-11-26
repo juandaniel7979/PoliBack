@@ -29,7 +29,7 @@ const obtenerCategorias = async( req = request ,res=response ) => {
 const obtenerCategoriasPorId = async( req = request,res = response ) => {
             const {id} = req.params;
             console.log(id);
-            const categoria = await Categoria.findById(id);
+            const categoria = await Categoria.findById(id).populate('suscriptores');
             console.log(categoria)
             return res.json(categoria)  
     
@@ -41,7 +41,7 @@ const obtenerCategoriasPorTag = async( req = request,res = response ) => {
             let {tag} = req.params;
             tag = tag.toUpperCase();
             console.log(tag);
-            const categoria = await Categoria.find({tags: tag});
+            const categoria = await Categoria.find({tags: tag}).populate('suscriptores.suscriptor');
             // console.log(categoria)
             return res.json({categorias: categoria})  
     
@@ -117,11 +117,14 @@ const suscribirCategoria = async( req = request ,res=response ) => {
         const uid = ObjectId(decoded.uid);
         const { id }= req.params;
 
+        const usuario = await Categoria.updateOne({_id: ObjectId(uid)}, {siguiendo});
+        
         const categoria = await Categoria.updateOne({_id: ObjectId(id)}, { $push: {
             suscriptores: {
-                _id:ObjectId(uid),
+                suscriptor:ObjectId(uid),
                 estado:'PENDIENTE'
-        }}} );
+        }
+        }} );
         res.json(categoria)
 }
 
